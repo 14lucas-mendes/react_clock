@@ -24,13 +24,20 @@ export class App extends React.Component {
     }, 3300);
 
     this.timeUpdatedInterval = window.setInterval(() => {
-      this.setState({ currentTime: new Date() });
+      this.setState({ today: new Date() });
     }, 1000);
+
+    document.addEventListener('contextmenu', this.handleRightClock);
+    document.addEventListener('click', this.handleLeftClick);
   }
 
   handleRightClock = (event: MouseEvent) => {
     event.preventDefault();
     this.setState({ hasClock: false });
+  };
+
+  handleLeftClick = () => {
+    this.setState({ hasClock: true });
   };
 
   componentWillUnmount(): void {
@@ -43,8 +50,9 @@ export class App extends React.Component {
     }
 
     document.removeEventListener('contextmenu', this.handleRightClock);
+    document.removeEventListener('click', this.handleLeftClick);
 
-    console.log('Clock component unmounted');
+    //console.log('Clock component unmounted');
   }
 
   // This code starts a timer
