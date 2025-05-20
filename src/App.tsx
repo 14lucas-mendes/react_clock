@@ -10,28 +10,44 @@ function getRandomName(): string {
 export class App extends React.Component {
   state = {
     hasClock: true,
+    clockName: 'Clock-0',
+    today: new Date(),
   };
 
-  today = new Date();
+  timerId?: number;
 
-  clockName = 'Clock-0';
+  timeUpdatedInterval?: number;
 
   componentDidMount(): void {
     this.timerId = window.setInterval(() => {
-      this.clockName = getRandomName();
+      this.setState({ clockName: getRandomName() });
     }, 3300);
+
+    this.timeUpdatedInterval = window.setInterval(() => {
+      this.setState({ currentTime: new Date() });
+    }, 1000);
   }
 
-  componentDidUpdate(): void {}
+  handleRightClock = (event: MouseEvent) => {
+    event.preventDefault();
+    this.setState({ hasClock: false });
+  };
 
   componentWillUnmount(): void {
-    clearInterval(this.timerId);
+    if (this.timerId) {
+      clearInterval(this.timerId);
+    }
+
+    if (this.timeUpdatedInterval) {
+      clearInterval(this.timeUpdatedInterval);
+    }
+
+    document.removeEventListener('contextmenu', this.handleRightClock);
+
+    console.log('Clock component unmounted');
   }
 
   // This code starts a timer
-  timerId = window.setInterval(() => {
-    this.clockName = getRandomName();
-  }, 3300);
 
   // this code stops the timer
 
@@ -39,16 +55,17 @@ export class App extends React.Component {
     return (
       <div className="App">
         <h1>React clock</h1>
+        {this.state.hasClock && (
+          <div className="Clock">
+            <strong className="Clock__name">{this.state.clockName}</strong>
 
-        <div className="Clock">
-          <strong className="Clock__name">{this.clockName}</strong>
+            {' time is '}
 
-          {' time is '}
-
-          <span className="Clock__time">
-            {this.today.toUTCString().slice(-12, -4)}
-          </span>
-        </div>
+            <span className="Clock__time">
+              {this.state.today.toUTCString().slice(-12, -4)}
+            </span>
+          </div>
+        )}
       </div>
     );
   }
