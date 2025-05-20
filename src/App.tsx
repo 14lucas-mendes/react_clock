@@ -7,31 +7,49 @@ function getRandomName(): string {
   return `Clock-${value}`;
 }
 
-export const App: React.FC = () => {
-  const today = new Date();
-  let clockName = 'Clock-0';
+export class App extends React.Component {
+  state = {
+    hasClock: true,
+  };
+
+  today = new Date();
+
+  clockName = 'Clock-0';
+
+  componentDidMount(): void {
+    this.timerId = window.setInterval(() => {
+      this.clockName = getRandomName();
+    }, 3300);
+  }
+
+  componentDidUpdate(): void {}
+
+  componentWillUnmount(): void {
+    clearInterval(this.timerId);
+  }
 
   // This code starts a timer
-  const timerId = window.setInterval(() => {
-    clockName = getRandomName();
+  timerId = window.setInterval(() => {
+    this.clockName = getRandomName();
   }, 3300);
 
   // this code stops the timer
-  window.clearInterval(timerId);
 
-  return (
-    <div className="App">
-      <h1>React clock</h1>
+  render(): React.ReactNode {
+    return (
+      <div className="App">
+        <h1>React clock</h1>
 
-      <div className="Clock">
-        <strong className="Clock__name">{clockName}</strong>
+        <div className="Clock">
+          <strong className="Clock__name">{this.clockName}</strong>
 
-        {' time is '}
+          {' time is '}
 
-        <span className="Clock__time">
-          {today.toUTCString().slice(-12, -4)}
-        </span>
+          <span className="Clock__time">
+            {this.today.toUTCString().slice(-12, -4)}
+          </span>
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+}
